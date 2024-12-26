@@ -406,6 +406,8 @@ class GPT(nn.Module):
                         for i in range(self.num_vq)
                     ]
                     emb = torch.stack(code_emb, 3).sum(3)
+                # 无论是text还是audio，emb的形状都是B T H
+                
                 del inputs_ids_emb, model_input.input_ids
             model_input.inputs_embeds = emb
 
@@ -433,6 +435,7 @@ class GPT(nn.Module):
             with P.cached():
                 if infer_text:
                     logits: torch.Tensor = self.head_text(hidden_states)
+                    # 如果是text，有1个预测头，logits的形状为[B, T, num_tokens]
                 else:
                     # logits = torch.stack([self.head_code[i](hidden_states) for i in range(self.num_vq)], 3)
                     logits = torch.empty(
@@ -447,6 +450,7 @@ class GPT(nn.Module):
                         x: torch.Tensor = self.head_code[num_vq_iter](hidden_states)
                         logits[..., num_vq_iter] = x
                         del x
+                    # 如果是audio，有num_vq个预测头，logits的形状为[B, T, num_tokens, num_vq]
 
             del hidden_states
 
