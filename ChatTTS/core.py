@@ -551,9 +551,10 @@ class Chat:
                 self.gpt.device_gpt,
             )
 
+        # input_ids的形状是[B, T, num_vq]
         result = gpt.generate(
             emb,
-            input_ids,
+            input_ids, 
             temperature=torch.tensor(temperature, device=device),
             eos_token=num_code,
             attention_mask=attention_mask,
