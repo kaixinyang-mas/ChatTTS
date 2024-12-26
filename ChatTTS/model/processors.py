@@ -20,7 +20,7 @@ class CustomRepetitionPenaltyLogitsProcessorRepeat:
     ) -> torch.FloatTensor:
         if input_ids.size(1) > self.past_window:
             input_ids = input_ids.narrow(1, -self.past_window, self.past_window)
-        freq = F.one_hot(input_ids, scores.size(1)).sum(1)
+        freq = F.one_hot(input_ids, scores.size(1)).sum(1) # 非常棒的计算词频的方法，input_ids维度是[B,T], one-hot后是[B,T,Vocab],sum后是[B,Vocab],统计了每个batch的词频
         if freq.size(0) > self.max_input_ids:
             freq.narrow(
                 0, self.max_input_ids, freq.size(0) - self.max_input_ids
